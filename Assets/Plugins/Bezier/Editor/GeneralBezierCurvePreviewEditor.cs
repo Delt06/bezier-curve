@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Editor
+namespace Bezier.Editor
 {
     [CustomEditor(typeof(BezierCurveComponent))]
     public class GeneralBezierCurvePreviewEditor : UnityEditor.Editor

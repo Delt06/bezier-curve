@@ -1,0 +1,17 @@
+{
+    "name": "Bezier.Editor",
+    "references": [
+        "GUID:06d63f7b838680b44ba6d011894de3a2"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
