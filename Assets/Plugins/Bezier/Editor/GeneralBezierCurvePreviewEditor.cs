@@ -4,112 +4,112 @@ using UnityEngine;
 
 namespace Bezier.Editor
 {
-    [CustomEditor(typeof(BezierCurveComponent))]
-    public class GeneralBezierCurvePreviewEditor : UnityEditor.Editor
-    {
-        public static bool DrawTangents = true;
-        public static bool EditPoints = true;
-        
-        private BezierCurveComponent _target;
+	[CustomEditor(typeof(BezierCurveComponent))]
+	public class GeneralBezierCurvePreviewEditor : UnityEditor.Editor
+	{
+		public static bool DrawTangents = true;
+		public static bool EditPoints = true;
 
-        private void OnEnable()
-        {
-            _target = (BezierCurveComponent) target;
-        }
+		private BezierCurveComponent _target;
 
-        private void OnSceneGUI()
-        {
-            if (DrawTangents)
-                DrawCurveTangents();
-            
-            if (EditPoints)
-                DrawPointHandles();
-            
-            DrawCurve();
-            DrawButtons();
-        }
+		private void OnEnable()
+		{
+			_target = (BezierCurveComponent) target;
+		}
 
-        private void DrawCurveTangents()
-        {
-            Handles.color = Color.yellow * 0.5f;
-            Handles.DrawPolyLine(_target.Points);
-        }
+		private void OnSceneGUI()
+		{
+			if (DrawTangents)
+				DrawCurveTangents();
 
-        private void DrawPointHandles()
-        {
-            var points = _target.Points;
+			if (EditPoints)
+				DrawPointHandles();
 
-            for (var index = 0; index < points.Length; index++)
-            {
-                EditorGUI.BeginChangeCheck();
-                var newPoint = Handles.PositionHandle(points[index], Quaternion.identity);
-                if (!EditorGUI.EndChangeCheck()) continue;
+			DrawCurve();
+			DrawButtons();
+		}
 
-                Undo.RecordObject(_target, "Changed Bezier Curve point");
-                _target.Points[index] = newPoint;
-            }
-        }
+		private void DrawCurveTangents()
+		{
+			Handles.color = Color.yellow * 0.5f;
+			Handles.DrawPolyLine(_target.Points);
+		}
 
-        private void DrawCurve()
-        {
-            var points = Mathf.RoundToInt(GetTotalDistance());
-            var step = 1f / (points - 1);
-            Handles.color = Color.green;
+		private void DrawPointHandles()
+		{
+			var points = _target.Points;
 
-            for (var index = 1; index < points; index++)
-            {
-                var from = _target.EvaluateAt(step * (index - 1));
-                var to = _target.EvaluateAt(step * index);
-                Handles.DrawLine(from, to);
-            }
-        }
+			for (var index = 0; index < points.Length; index++)
+			{
+				EditorGUI.BeginChangeCheck();
+				var newPoint = Handles.PositionHandle(points[index], Quaternion.identity);
+				if (!EditorGUI.EndChangeCheck()) continue;
 
-        private float GetTotalDistance()
-        {
-            var totalDistance = 0f;
-            
-            for (var i = 1; i < _target.Points.Length; i++)
-            {
-                var from = _target.Points[i - 1];
-                var to = _target.Points[i];
-                var distance = Vector3.Distance(from, to);
+				Undo.RecordObject(_target, "Changed Bezier Curve point");
+				_target.Points[index] = newPoint;
+			}
+		}
 
-                totalDistance += distance;
-            }
+		private void DrawCurve()
+		{
+			var points = Mathf.RoundToInt(GetTotalDistance());
+			var step = 1f / (points - 1);
+			Handles.color = Color.green;
 
-            return totalDistance;
-        }
+			for (var index = 1; index < points; index++)
+			{
+				var from = _target.EvaluateAt(step * (index - 1));
+				var to = _target.EvaluateAt(step * index);
+				Handles.DrawLine(from, to);
+			}
+		}
 
-        private void DrawButtons()
-        {
-            var rect = new Rect(Screen.width - 150, Screen.height - 150, 120, 100);
-            GUILayout.Window(0, rect, DrawMenu, "Bezier Curve");
-        }
+		private float GetTotalDistance()
+		{
+			var totalDistance = 0f;
 
-        private void DrawMenu(int id)
-        {
-            DrawToggles();
-            DrawPlusButton();
-        }
+			for (var i = 1; i < _target.Points.Length; i++)
+			{
+				var from = _target.Points[i - 1];
+				var to = _target.Points[i];
+				var distance = Vector3.Distance(from, to);
 
-        private static void DrawToggles()
-        {
-            DrawTangents = GUILayout.Toggle(DrawTangents, "Draw Tangents");
-            EditPoints = GUILayout.Toggle(EditPoints, "Edit Points");
-        }
+				totalDistance += distance;
+			}
 
-        private void DrawPlusButton()
-        {
-            if (!GUILayout.Button("+")) return;
+			return totalDistance;
+		}
 
-            var points = _target.Points;
-            var lastPoint = points[points.Length - 1];
-            var newPoints = points
-                .Concat(new[] {lastPoint})
-                .ToArray();
+		private void DrawButtons()
+		{
+			var rect = new Rect(Screen.width - 150, Screen.height - 150, 120, 100);
+			GUILayout.Window(0, rect, DrawMenu, "Bezier Curve");
+		}
 
-            Undo.RecordObject(_target, "Created a new Bezier Curve point");
-            _target.Points = newPoints;
-        }
-    }
+		private void DrawMenu(int id)
+		{
+			DrawToggles();
+			DrawPlusButton();
+		}
+
+		private static void DrawToggles()
+		{
+			DrawTangents = GUILayout.Toggle(DrawTangents, "Draw Tangents");
+			EditPoints = GUILayout.Toggle(EditPoints, "Edit Points");
+		}
+
+		private void DrawPlusButton()
+		{
+			if (!GUILayout.Button("+")) return;
+
+			var points = _target.Points;
+			var lastPoint = points[points.Length - 1];
+			var newPoints = points
+				.Concat(new[] {lastPoint})
+				.ToArray();
+
+			Undo.RecordObject(_target, "Created a new Bezier Curve point");
+			_target.Points = newPoints;
+		}
+	}
 }
